@@ -11,15 +11,7 @@ export class AppComponent {
   photo: string | null = null;
   streamStarted = false;
 
-  async startCamera() {
-    try {
-      this.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      this.video.nativeElement.srcObject = this.stream;
-      this.streamStarted = true;
-    } catch (error) {
-      console.error('دسترسی به دوربین ممکن نیست:', error);
-    }
-  }
+
 
   capture() {
     const videoElement = this.video.nativeElement;
@@ -30,4 +22,27 @@ export class AppComponent {
 
     this.photo = canvas.toDataURL('image/png'); 
   }
+
+
+  async startCamera() {
+  try {
+    this.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    this.video.nativeElement.srcObject = this.stream;
+    this.streamStarted = true;
+  } catch (error) {
+    console.error('خطا در فعال‌سازی دوربین پشت:', error);
+    // fallback به دوربین پیش‌فرض
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        video: true
+      });
+      this.video.nativeElement.srcObject = this.stream;
+      this.streamStarted = true;
+    } catch (err) {
+      console.error('خطا در fallback:', err);
+    }
+  }
+}
 }
